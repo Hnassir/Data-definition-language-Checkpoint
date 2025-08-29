@@ -1,4 +1,5 @@
 -- 1/ tables from relational check point
+
 Employees (Num_E,first_name,last_name,position,salary,#num_s)
 
 Departments (Num_S,label,name_manager)
@@ -7,11 +8,9 @@ Projects (Num_P,title,#num_s)
 
 Roles (#Num_e,#Num_p,start_date,end_date)
 
+
 --- 2/ creating tables
 
-/* should create a database
-will name it system-empl
-*/
 
 create table department (
 
