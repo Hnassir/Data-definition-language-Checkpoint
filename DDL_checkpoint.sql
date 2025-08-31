@@ -4,9 +4,9 @@ Employees (Num_E,name,position,salary,#department_num_s)
 
 Departments (Num_S,label,name_manager)
 
-Projects (Num_P,title,#department_num_s)
+Projects (Num_P,title,Start_Date,End_Date,#department_num_s)
 
-Roles (#Num_e,#Num_p,start_date,end_date)
+Roles (#Num_e,#Num_p,role)
 
 */
 --- 2/ creating tables
