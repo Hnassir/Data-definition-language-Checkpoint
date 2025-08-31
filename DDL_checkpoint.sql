@@ -2,7 +2,7 @@
 /*
 Employees (Num_E,name,position,salary,#department_num_s)
 
-Departments (Num_S,label,name_manager)
+Departments (Num_S,label,manager_name)
 
 Projects (Num_P,title,Start_Date,End_Date,#department_num_s)
 
