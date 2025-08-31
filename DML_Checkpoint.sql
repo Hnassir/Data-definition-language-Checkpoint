@@ -17,8 +17,8 @@ INSERT INTO Project VALUES (201,'Website Redesign','2024-01-15','2024-06-30',1),
 (203,'Market Research','2024-02-01','2024-07-31',3),
 (204,'IT Infrastructure Setup','2024-04-01','2024-12-31',1);
 
--- insert employee_Project records 
-INSERT INTO Employee_Project VALUES (101,201,'Frontend Developer'),
+-- insert role records 
+INSERT INTO role VALUES (101,201,'Frontend Developer'),
 (104,201,'Backend Developer'),
 (102,202,'Trainer'),
 (105,202,'Coordinator'),
@@ -28,14 +28,14 @@ INSERT INTO Employee_Project VALUES (101,201,'Frontend Developer'),
 
 -- 2/
 -- updates records
-update Employee_Project
+update role
 set Role = 'Full Stack Developer'
 where Employee_Num_E =101;
 
 
 -- 3/
 -- delete records
-delete from Employee_Project
+delete from role
 where Employee_Num_E = 103;
     
 delete from Employee
