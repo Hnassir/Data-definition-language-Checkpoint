@@ -47,7 +47,7 @@ FOREIGN KEY (Department_Num_S) references department (Num_S)
 go
 
 
-create table employee_project (
+create table role (
 
 Employee_Num_E INT,
 Project_Num_P INT,
