@@ -1,12 +1,12 @@
 -- 1/ tables from relational check point
 
-Employees (Num_E,first_name,last_name,position,salary,#num_s)
+Employees (pk Num_E,first_name,last_name,position,salary,#department_num_s)
 
-Departments (Num_S,label,name_manager)
+Departments (pk Num_S,label,name_manager)
 
-Projects (Num_P,title,#num_s)
+Projects (pk Num_P,title,#department_num_s)
 
-Roles (#Num_e,#Num_p,start_date,end_date)
+Roles (pk #Num_e,pk #Num_p,start_date,end_date)
 
 
 --- 2/ creating tables
