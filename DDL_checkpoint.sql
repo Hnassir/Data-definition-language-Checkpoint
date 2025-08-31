@@ -6,7 +6,7 @@ Departments (Num_S,label,name_manager)
 
 Projects (Num_P,title,Start_Date,End_Date,#department_num_s)
 
-Roles (#Num_e,#Num_p,role)
+Roles (#Employee_Num_E,#Project_Num_P,role)
 
 */
 --- 2/ creating tables
