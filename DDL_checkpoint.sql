@@ -1,6 +1,6 @@
 -- 1/ tables from relational check point
 /*
-Employees (Num_E,first_name,last_name,position,salary,#department_num_s)
+Employees (Num_E,name,position,salary,#department_num_s)
 
 Departments (Num_S,label,name_manager)
 
@@ -24,7 +24,7 @@ go
 create table employee (
 
 Num_E INT PRIMARY KEY,
-NameNVARCHAR(255),
+Name VARCHAR(255),
 Position VARCHAR(255),
 Salary DECIMAL(10, 2),
 Department_Num_S INT,
@@ -51,7 +51,7 @@ create table employee_project (
 
 Employee_Num_E INT,
 Project_Num_P INT,
-Role: VARCHAR(255),
+Role VARCHAR(255),
 primary key (employee_num_e,project_num_p),
 FOREIGN KEY (Employee_Num_E) references employee (Num_E),
 FOREIGN KEY (Project_Num_P) references project (Num_P)
