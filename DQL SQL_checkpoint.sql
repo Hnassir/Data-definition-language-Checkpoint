@@ -22,7 +22,8 @@ where p.title='website redesign';
 select top 1 d.label,d.manager_name,count(e.num_e) as number_employee
 from departments d
 inner join employees e on e.department_num_s=d.num_s
-group by d.label,d.manager_name;
+group by d.label,d.manager_name
+order by number_employee desc;
 
 --5
 select e.name,e.position,d.label
