@@ -3603,14 +3603,14 @@ where CATEGORY_CODE in (select CATEGORY_CODE
 
 --3
 
-select  employee_int,last_name,first_name,
-datediff(year,birth_date,convert(date,current_timestamp)) as age,
-datediff(year,hire_date,convert(date,current_timestamp)) as seniority,
-sum(salary + commission) as net_salary
+select employee_int,last_name,first_name,datediff(year,birth_date,convert(date,current_timestamp)) as age,
+datediff(year,hire_date,convert(date,current_timestamp)) as seniority
 from employees
-group by employee_int,last_name,first_name,
-datediff(year,birth_date,convert(date,current_timestamp)),
-datediff(year,hire_date,convert(date,current_timestamp))
+where employee_int in (select employee_int 
+from employees
+group by employee_int
+having sum(salary + commission) >= 8000)
+
 order by seniority desc;
 
 --4
@@ -3627,49 +3627,38 @@ and UNITS_ON_ORDER is not null
 
 --5
 
-select * from customers
-where country =
+select * from customers c
+where exists 
 (
-select country from SUPPLIERS
-where SUPPLIER_int=1
-)
-and city = 
-(
-select city from SUPPLIERS
-where SUPPLIER_int=1
-)
-and substring(POSTAL_CODE,len(POSTAL_CODE)-2,3) = 
-(
-select  substring(POSTAL_CODE,len(POSTAL_CODE)-2,3)
-from SUPPLIERS
-where SUPPLIER_int=1
-) 
-;
+select * from SUPPLIERS s
+where s.country =c.country and s.SUPPLIER_int=1 and c.city =s.city
+and substring(c.POSTAL_CODE,len(c.POSTAL_CODE)-2,3) =substring(s.POSTAL_CODE,len(s.POSTAL_CODE)-2,3)
+) ;
 
 
 --6
 
-select * from 
+select order_int,new_discount_rate, 'apply_new_disc' as discount_rate_application_note from 
 (
-select order_int,new_disc, 'apply_new_disc' as disc from 
+select order_int,new_discount_rate, 'apply_new_disc' as discount_rate_application_note from 
 (
-select order_int, cast( 0 as int) as new_disc, sum(unit_price*quantity) as total from order_details
+select order_int, cast( 0 as int) as new_discount_rate, sum(unit_price*quantity) as total from order_details
 group by order_int
 having sum(unit_price*quantity) between 0 and 2000
 union
-select order_int, cast( 5 as int) as new_disc, sum(unit_price*quantity) as total from order_details
+select order_int, cast( 0.05 as int) as new_discount_rate, sum(unit_price*quantity) as total from order_details
 group by order_int
 having sum(unit_price*quantity) between 2001 and 10000
 union
-select order_int, cast( 10 as int) as new_disc, sum(unit_price*quantity) as total from order_details
+select order_int, cast( 0.10 as int) as new_discount_rate, sum(unit_price*quantity) as total from order_details
 group by order_int
 having sum(unit_price*quantity) between 10000 and 40000
 union
-select order_int, cast( 15 as int) as new_disc, sum(unit_price*quantity) as total from order_details
+select order_int, cast( 0.15 as int) as new_discount_rate, sum(unit_price*quantity) as total from order_details
 group by order_int
 having sum(unit_price*quantity) between 40001 and 80000
 union
-select order_int, cast( 20 as int) as new_disc, sum(unit_price*quantity) as total from order_details
+select order_int, cast( 0.20 as int) as new_discount_rate, sum(unit_price*quantity) as total from order_details
 group by order_int
 having sum(unit_price*quantity)> 80000
 ) as tab1
@@ -3695,7 +3684,7 @@ select order_int, cast( 0.15 as int) as new_disc, sum(unit_price*quantity) as to
 group by order_int
 having sum(unit_price*quantity) between 40001 and 80000
 union
-select order_int, cast( 20 as int) as new_disc, sum(unit_price*quantity) as total from order_details
+select order_int, cast( 0.20 as int) as new_disc, sum(unit_price*quantity) as total from order_details
 group by order_int
 having sum(unit_price*quantity)> 80000
 ) as Tab2
@@ -3724,22 +3713,17 @@ having count(od.product_ref) <= 1;
 
 --9
 
-select c.customer_code,c.company,c.phone,tab.total,c.COUNTRY from
-(
-select order_int, sum(unit_price*quantity) as total from  order_details
-group by order_int
-) as tab
-right join orders o on o.order_int=tab.order_int
-right join CUSTOMERS c on c.customer_code=o.customer_code
-where c.country='france'
-and (
-tab.order_int in 
-(
-select order_int from orders
-where format(order_date,'yyyy')='1998' and format(order_date,'dddd')='monay' and format(order_date,'MMMM')='april'
-)
-or c.customer_code not in (select customer_code from orders)
-)
+select c.customer_code,c.company,c.phone.tab1.total_amount,c.country
+from
+(select o.customer_code,sum(tab.total) as total_amount
+from (select order_int, sum(unit_price*quantity) as total from  order_details group by order_int) as tab
+inner join orders o on o.order_int=tab.order_int
+where format(o.order_date,'yyyy')='1998' and format(o.order_date,'dddd')='monay' and format(o.order_date,'MMMM')='april'
+group by o.customer_code
+) 
+as tab1
+right join CUSTOMERS c on c.customer_code=tab1.customer_code
+where c.country='france'and c.customer_code not in (select customer_code from orders)
 ;
  
 --10
@@ -3755,37 +3739,31 @@ inner join orders o on o.order_int=od.ORDER_int
 ) as tab1
 group by customer_code
 ) as tab2
-inner join customers c on o.customer_code=tab2.customer_code
+inner join customers c on c.customer_code=tab2.customer_code
 where tab2.nb_prod = (select count(product_ref) from products)
 ;
 
 --11
 
-select tab.*
+select c.customer_code,tab.number_orders
 from
-(select customer_code, count(order_int) as total_orders from orders
+(select customer_code, count(order_int) as number_orders from orders
 group by customer_code
 ) as tab 
 inner join customers c on c.customer_code =tab.customer_code
 where c.country='france';
 
 
-
-
 --12
 select *, abs(orders_in_1996-orders_in_1997) as difference
 from
-(select distinct
-(select count(order_int) 
-from orders
-where format(order_date,'yyyy') = '1996'
-) as orders_in_1996,
-(select count(order_int) as orders_in_1997
-from orders
-where format(order_date,'yyyy') = '1997'
-) as orders_in_1997
-from orders
-) as order_diff;
+(
+	select distinct 
+	(select count(order_int) from orders where format(order_date,'yyyy') = '1996') as orders_in_1996,
+	(select count(order_int) as orders_in_1997 from orders where format(order_date,'yyyy') = '1997') as orders_in_1997
+    from orders
+)
+as order_diff;
 
 
 
